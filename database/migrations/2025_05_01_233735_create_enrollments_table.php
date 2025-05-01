@@ -12,12 +12,16 @@ class CreateEnrollmentsTable extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::create('enrollments', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('enrollments', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('student_id')->constrained()->onDelete('cascade');
+        $table->foreignId('course_id')->constrained()->onDelete('cascade');
+        $table->date('enrollment_date');
+        $table->timestamps();
+    });
+}
+
 
     /**
      * Reverse the migrations.
