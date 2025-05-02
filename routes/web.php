@@ -14,10 +14,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/students');
 });
 
-Route::get('/customers/new', 'App\Http\Controllers\CustomerController@new');
+Route::resource('students', StudentController::class);
 
 
-Route::post('/customers/create', 'App\Http\Controllers\CustomerController@create')->name('customers.create');
+Route::resource('courses', CourseController::class);
+
+
+Route::resource('enrollments', EnrollmentController::class);
