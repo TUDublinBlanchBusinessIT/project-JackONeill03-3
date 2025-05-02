@@ -2,83 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Enrollment;
+use App\Models\Student;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class EnrollmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        $enrollments = Enrollment::with(['student', 'course'])->get();
+        return view('enrollments.index', compact('enrollments'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
+        $students = Student::all();
+        $courses = Course::all();
+        return view('enrollments.create', compact('students', 'courses'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'course_id' => 'required|exists:courses,id',
+            'enrollment_date' => 'required|date',
+        ]);
+
+        Enrollment::create($request->all());
+        return redirect()->route('enrollments.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function edit(Enrollment $enrollment)
     {
-        //
+        $students = Student::all();
+        $courses = Course::all();
+        return view('enrollments.create', compact('enrollment', 'students', 'courses')); // Reuse form
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function update(Request $request, Enrollment $enrollment)
     {
-        //
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'course_id' => 'required|exists:courses,id',
+            'enrollment_date' => 'required|date',
+        ]);
+
+        $enrollment->update($request->all());
+        return redirect()->route('enrollments.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function destroy(Enrollment $enrollment)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $enrollment->delete();
+        return redirect()->route('enrollments.index');
     }
 }
